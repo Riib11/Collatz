@@ -73,7 +73,7 @@ def draw_path(prev,child,angle=math.pi/2):
         if p in data and p < MAXIMUM:
             draw_path(new,p,angle=a)
 
-def draw(start=None,line_length=LINE_LENGTH,size=SIZE,maximum=MAXIMUM,turn=TURN,tk=TK,image=IMAGE):
+def draw(start=None,line_length=LINE_LENGTH,size=SIZE,maximum=MAXIMUM,turn=TURN,tk=TK,image=IMAGE,filename=None):
     global data, LINE_LENGTH, SIZE, center, MAXIMUM, TURN, TK, IMAGE
 
     data = collatz_data.read()
@@ -85,6 +85,9 @@ def draw(start=None,line_length=LINE_LENGTH,size=SIZE,maximum=MAXIMUM,turn=TURN,
     TURN = math.pi/turn
     TK = tk
     IMAGE = image
+
+    if filename == None:
+        filename = "collatz_visual_" + str(MAXIMUM)
 
     if TK:
         init_tk()
@@ -100,4 +103,4 @@ def draw(start=None,line_length=LINE_LENGTH,size=SIZE,maximum=MAXIMUM,turn=TURN,
         C.pack()
         top.mainloop()
     if IMAGE:
-        IMG.save("visuals/collatz_visual_" + str(MAXIMUM) + ".jpg")
+        IMG.save("visuals/" + filename + ".jpg")
