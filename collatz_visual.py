@@ -1,41 +1,63 @@
 import tkinter as tk
+from PIL import Image
+from PIL import ImageDraw
 import collatz_calculator as cc
+import collatz_data
 import math
 
-line_length = 1
-size = 700
-maximum = 10000000
-turn = math.pi/55
+LINE_LENGTH = 3
+SIZE = 700
+MAXIMUM = 10000
+TURN = 40
 
-top = tk.Tk()
+TK = True
+IMAGE = False
 
-C = tk.Canvas(top,bg="black",height=size,width=size)
-center = [size//2,size//2]
-start = center
+top = None
 
-# C.create_line(0,0,50,50,fill="white")
+C = None
+center = None
 
-cc.generate_tree(1,maximum)
+def init_tk():
+    global top, C
+
+    top = tk.Tk()
+    C = tk.Canvas(top,bg="black",height=SIZE,width=SIZE)
+
+IMG = None
+DRAW = None
+white = (255, 255, 255)
+black = (0, 0, 0)
+
+def init_image():
+    global IMG, DRAW
+    # PIL create an empty image and draw object to draw on
+    # memory only, not visible
+    IMG = Image.new("RGB", (SIZE, SIZE), black)
+    DRAW = ImageDraw.Draw(IMG)
+
+
+data = None
 
 def get_next_loc(prev,d,angle):
     if d < 0:
-        t = turn
+        t = TURN
     else:
-        t = -turn
+        t = -TURN
 
     angle += t
 
     return [
         [
-            prev[0]+(line_length*math.cos(angle)),
-            prev[1]+(line_length*math.sin(angle))
+            prev[0]+(LINE_LENGTH*math.cos(angle)),
+            prev[1]+(LINE_LENGTH*math.sin(angle))
         ],
         angle
     ]
 
 def draw_path(prev,child,angle=math.pi/2):
     
-    parents = cc.tree[child]
+    parents = data[child]
 
     for p in parents:
         # negative if did 3n-1, positive if did n/2
@@ -43,11 +65,39 @@ def draw_path(prev,child,angle=math.pi/2):
         new = result[0]
         a = result[1]
 
-        C.create_line(prev[0],prev[1],new[0],new[1],fill="white")
-        if p in cc.tree:
+        if TK:
+            C.create_line(prev[0],prev[1],new[0],new[1],fill="white")
+        if IMAGE:
+            DRAW.line([prev[0],prev[1],new[0],new[1]],white)
+
+        if p in data and p < MAXIMUM:
             draw_path(new,p,angle=a)
 
-draw_path(start,1)
+def draw(start=None,line_length=LINE_LENGTH,size=SIZE,maximum=MAXIMUM,turn=TURN,tk=TK,image=IMAGE):
+    global data, LINE_LENGTH, SIZE, center, MAXIMUM, TURN, TK, IMAGE
 
-C.pack()
-top.mainloop()
+    data = collatz_data.read()
+
+    LINE_LENGTH = line_length
+    SIZE = size
+    center = [SIZE//2,SIZE//2]
+    MAXIMUM = maximum
+    TURN = math.pi/turn
+    TK = tk
+    IMAGE = image
+
+    if TK:
+        init_tk()
+    if IMAGE:
+        init_image()
+
+    if start == None:
+        start = center
+
+    draw_path(start,1)
+
+    if TK:
+        C.pack()
+        top.mainloop()
+    if IMAGE:
+        IMG.save("visuals/collatz_visual_" + str(MAXIMUM) + ".jpg")
