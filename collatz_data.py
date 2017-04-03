@@ -1,7 +1,7 @@
 import pickle
 import collatz_calculator as cc
 
-file_name = "collatz_data.txt"
+file_name = "collatz_data.data"
 
 def update(maxi=100000):
     cc.generate_tree(1,maxi)
@@ -11,3 +11,5 @@ def update(maxi=100000):
 def read():
     with open(file_name, 'rb') as f:
         return pickle.load(f)
+
+update()
