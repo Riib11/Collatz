@@ -12,3 +12,6 @@ def create_animation():
 def create_image():
     collatz_visual.draw(size=800,line_length=7,turn=20,maximum=100,tk=False,image=True)
 
+def create_3d_scatter():
+    # stuff
+    pass
